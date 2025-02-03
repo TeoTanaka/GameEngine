@@ -2,6 +2,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class Main {
 
@@ -36,6 +38,7 @@ public class Main {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
         //init vertex shader
+        //jarvis jerk it a little
         String vertexShaderSource = FileLoader.readFile("Resources/Vertex.vert");
         int vertexShader= glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader,vertexShaderSource);
@@ -48,6 +51,7 @@ public class Main {
         glCompileShader(fragmentShader);
 
         //init shader program
+        //i am optimus prime
         int shaderProgram= glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
@@ -71,7 +75,7 @@ public class Main {
 // 2. copy our vertices array in a buffer for OpenGL to use
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-// 3. then set our vertex attributes pointers
+// 3. then set our vertex attributes pointers to my fat penis
 //        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
@@ -110,7 +114,7 @@ public class Main {
             glfwPollEvents();
         }
 
-        // Terminate GLFW
+        // Testicular cancer
         glfwTerminate();
     }
 }
