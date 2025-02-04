@@ -1,18 +1,60 @@
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
 
 public class Main {
 
     public static void main(String[] args) {
         //Vertexes
         float vertices[] = {
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.0f,  0.5f, 0.0f
+                -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+                0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+                0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+                0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+                -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+                -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+                0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+                0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+                0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
 
         // Initialize GLFW
@@ -81,9 +123,12 @@ public class Main {
 
 
 
+//make matrices
+    Matrix4f model = new Matrix4f().rotate((float)(Math.toRadians(-55.0f)), new Vector3f(1.0f, 0.0f, 0.0f));
+    Matrix4f view = new Matrix4f().translate(new Vector3f(0.0f, 0.0f, -3.0f));
+    Matrix4f projection = new Matrix4f().perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
 
-
-
+//    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
 
 
@@ -94,6 +139,31 @@ public class Main {
 
         // Main loop
         while (!glfwWindowShouldClose(window)) {
+            //send matrices to shader program
+
+            //sending the model matrix
+            int modelLoc = glGetUniformLocation(shaderProgram, "model");
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
+                model.get(matrixBuffer); // Fill buffer with matrix data
+                glUniformMatrix4fv(modelLoc, false, matrixBuffer); // Pass to OpenGL
+            }
+            //sending the view
+            int viewLoc = glGetUniformLocation(shaderProgram, "view");
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
+                view.get(matrixBuffer); // Fill buffer with matrix data
+                glUniformMatrix4fv(viewLoc, false, matrixBuffer); // Pass to OpenGL
+            }
+            //sending the projection
+            int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
+                projection.get(matrixBuffer); // Fill buffer with matrix data
+                glUniformMatrix4fv(projectionLoc, false, matrixBuffer); // Pass to OpenGL
+            }
+
+
             // input
             // -----
             //processInput(window);
@@ -105,7 +175,7 @@ public class Main {
             // draw our first triangle
             glUseProgram(shaderProgram);
             glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
             // glBindVertexArray(0); // no need to unbind it every time
 
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -114,7 +184,6 @@ public class Main {
             glfwPollEvents();
         }
 
-        // Testicular cancer
         glfwTerminate();
     }
 }
