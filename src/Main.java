@@ -80,7 +80,6 @@ public class Main {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
         //init vertex shader
-        //jarvis jerk it a little
         String vertexShaderSource = FileLoader.readFile("Resources/Vertex.vert");
         int vertexShader= glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader,vertexShaderSource);
@@ -104,13 +103,14 @@ public class Main {
         glDeleteShader(fragmentShader);
 
         //init vertex attrb pointer
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
-
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.BYTES, 3 * Float.BYTES); // Texture Coordinates
+        glEnableVertexAttribArray(1);
         //init VAO
         int VAO = glGenBuffers();
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VAO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
         glBindVertexArray(VAO);
@@ -136,6 +136,10 @@ public class Main {
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+        glEnable(GL_DEPTH_TEST);
+
+
 
         // Main loop
         while (!glfwWindowShouldClose(window)) {
@@ -170,7 +174,7 @@ public class Main {
 
             // render
             // ------
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // draw our first triangle
             glUseProgram(shaderProgram);
