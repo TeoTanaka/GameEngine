@@ -1,3 +1,5 @@
+import org.joml.Vector3f;
+
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glCompileShader;
 
@@ -44,6 +46,11 @@ public class Shader {
     public void setFloat(String name, float value)
     {
         glUniform1f(glGetUniformLocation(ID, name), value);
+    }
+
+    public void setVec3(String name, Vector3f value)
+    {
+        glUniform3f(glGetUniformLocation(ID, name),value.x,value.y,value.z);
     }
 }
 
