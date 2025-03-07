@@ -57,6 +57,8 @@ public class Main {
                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
 
+        Vector3f lightPos = new Vector3f(1.2f, -1f, 0f);
+
         // Initialize GLFW
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -81,7 +83,7 @@ public class Main {
 
 
         Shader lightingShader = new Shader("Resources/Colors.vert", "Resources/Colors.frag");
-        Shader lightCubeShader = new Shader("Resources/light_cube.vs", "Resources/light_cube.fs");
+        Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
 
         //init vertex shader
@@ -131,14 +133,14 @@ public class Main {
 //        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        // init lightingVAO (for the lighting box)
+        // init lightCubeVAO (for the lighting box)
 
-        int lightingVAO = glGenBuffers();
-        glBindVertexArray(lightingVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, lightingVAO);
+        int lightCubeVAO = glGenBuffers();
+        glBindVertexArray(lightCubeVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, lightCubeVAO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
-        glBindVertexArray(lightingVAO);
+        glBindVertexArray(lightCubeVAO);
 // 2. copy our vertices array in a buffer for OpenGL to use
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
@@ -170,31 +172,28 @@ public class Main {
         while (!glfwWindowShouldClose(window)) {
             //send matrices to shader program
 
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             lightingShader.use();
             lightingShader.setVec3("objectColor", new Vector3f(1.0f, 0.5f, 0.31f));
             lightingShader.setVec3("lightColor",  new Vector3f(1.0f, 1.0f, 1.0f));
+            lightingShader.sendLocs(model,view,projection);
 
-            //sending the model matrix -- put this in a method
-            int modelLoc = glGetUniformLocation(shaderProgram, "model");
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
-                model.get(matrixBuffer); // Fill buffer with matrix data
-                glUniformMatrix4fv(modelLoc, false, matrixBuffer); // Pass to OpenGL
-            }
-            //sending the view
-            int viewLoc = glGetUniformLocation(shaderProgram, "view");
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
-                view.get(matrixBuffer); // Fill buffer with matrix data
-                glUniformMatrix4fv(viewLoc, false, matrixBuffer); // Pass to OpenGL
-            }
-            //sending the projection
-            int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
-                projection.get(matrixBuffer); // Fill buffer with matrix data
-                glUniformMatrix4fv(projectionLoc, false, matrixBuffer); // Pass to OpenGL
-            }
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            Matrix4f light_cube_model = new Matrix4f();
+            light_cube_model.translate(lightPos);
+            light_cube_model.scale(new Vector3f(.2f));
+
+
+            lightCubeShader.use();
+            lightCubeShader.sendLocs(light_cube_model,view,projection);
+
+            glBindVertexArray(lightCubeVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
