@@ -1,6 +1,8 @@
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
+
+import static org.joml.Vector3fKt.cross;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
 import org.joml.Matrix4f;
@@ -57,8 +59,21 @@ public class Main {
                 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f,  0.0f
         };
-
+    //camera stuff
         Vector3f lightPos = new Vector3f(1f, 1f, 0f);
+
+        Vector3f cameraPos = new Vector3f(0.0f, 0.0f, -3.0f);
+        Vector3f cameraTarget = new Vector3f(0.0f, 0.0f, 0.0f);
+
+        Vector3f cameraDirection = new Vector3f().normalize(cameraPos.sub(cameraTarget));// normalize(cameraPos - cameraTarget)
+
+        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+        Vector3f cameraRight =new Vector3f().normalize((new Vector3f().cross(up, cameraDirection)));
+
+        Vector3f cameraUp = new Vector3f().cross(cameraDirection, cameraRight);
+
+
+
 
         // Initialize GLFW
         if (!glfwInit()) {
@@ -83,7 +98,7 @@ public class Main {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
 
-        Shader lightingShader = new Shader("Resources/Colors.vert", "Resources/Colors.frag");
+        Shader lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
 
