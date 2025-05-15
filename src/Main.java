@@ -17,54 +17,58 @@ public class Main {
         //Vertexes
         float vertices[] = {
                 //vertex position  |       uv    |   normals
-                -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-                0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-                0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
-                0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
-                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, -1.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
 
-                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-                0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-                0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
-                0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
-                -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f,  1.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 
-                -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-                -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-                -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+                -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
 
-                0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-                0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f,  0.0f,
-                0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
-                0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
-                0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-                0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
-                0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, -1.0f,  0.0f,
-                0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-                0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
 
-                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f,  0.0f,
-                0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  1.0f,  0.0f,
-                0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-                0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-                -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-                -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f,  0.0f
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f
         };
-    //camera stuff
+        //camera stuff
         Vector3f lightPos = new Vector3f(1f, 1f, 0f);
 
+        Vector3f cameraPos = new Vector3f(0.0f, 0.0f, 3.0f);
+        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
+        Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
-
-
+        float deltaTime = 0;
+        float lastFrame = 0;
+        float currentFrame = 0;
 
 
         // Initialize GLFW
@@ -159,23 +163,18 @@ public class Main {
         glEnableVertexAttribArray(0);
 
 
-
 //make matrices
-    Matrix4f model = new Matrix4f().rotate((float)(Math.toRadians(-55.0f)), new Vector3f(0.0f, 1.0f, 0.0f));
-    Matrix4f view = new Matrix4f().translate(new Vector3f(0.0f, 0.0f, -3.0f));
-    Matrix4f projection = new Matrix4f().perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+        Matrix4f model = new Matrix4f().rotate((float) (Math.toRadians(-55.0f)), new Vector3f(0.0f, 1.0f, 0.0f));
+        Matrix4f view;
+        Matrix4f projection = new Matrix4f().perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
 
 //    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-
-
-
 
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         glEnable(GL_DEPTH_TEST);
-
 
 
         // Main loop
@@ -185,11 +184,19 @@ public class Main {
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            currentFrame = (float) glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            processInput(window,deltaTime,cameraPos, cameraUp,cameraFront);
+
+            //setting view matrix
+            view = new Matrix4f().lookAt(cameraPos, new Vector3f(cameraPos).add(cameraFront), cameraUp);
             lightingShader.use();
             lightingShader.setVec3("objectColor", new Vector3f(1.0f, 0.5f, 0.31f));
-            lightingShader.setVec3("lightColor",  new Vector3f(1.0f, 1.0f, 1.0f));
+            lightingShader.setVec3("lightColor", new Vector3f(1.0f, 1.0f, 1.0f));
             lightingShader.setVec3("lightPos", lightPos);
-            lightingShader.sendLocs(model,view,projection);
+            lightingShader.sendLocs(model, view, projection);
 
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -201,7 +208,7 @@ public class Main {
 
 
             lightCubeShader.use();
-            lightCubeShader.sendLocs(light_cube_model,view,projection);
+            lightCubeShader.sendLocs(light_cube_model, view, projection);
 
             glBindVertexArray(lightCubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -213,6 +220,25 @@ public class Main {
         }
 
         glfwTerminate();
+    }
+
+    public static void processInput(long window, float deltaTime, Vector3f cameraPos, Vector3f cameraUp, Vector3f cameraFront) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+        float cameraSpeed = (float) (2.5 * deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            cameraPos.add(cameraFront.mul(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            cameraPos.sub(cameraFront.mul(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            cameraPos.sub(new Vector3f().normalize(new Vector3f().cross(cameraFront, cameraUp)).mul(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            cameraPos.add(new Vector3f().normalize(new Vector3f().cross(cameraFront, cameraUp)).mul(cameraSpeed));
+        }
     }
 }
 
