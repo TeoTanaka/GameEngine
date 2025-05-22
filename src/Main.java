@@ -1,7 +1,10 @@
+import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import static org.joml.Vector3fKt.cross;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
@@ -12,6 +15,12 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.FloatBuffer;
 
 public class Main {
+    private static boolean firstMouse = true;
+
+    private static float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+    private static float pitch =  0.0f;
+
+    private static Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
 
     public static void main(String[] args) {
         //Vertexes
@@ -63,8 +72,19 @@ public class Main {
         Vector3f lightPos = new Vector3f(1f, 1f, 0f);
 
         Vector3f cameraPos = new Vector3f(0.0f, 0.0f, 3.0f);
-        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
+
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
+
+
+
+        float lastX = (float) ( 800.0f / 2.0);
+        float lastY = (float) (600.0 / 2.0);
+        float fov   =  45.0f;
+
+        Vector3f direction = new Vector3f();
+        direction.x = (float) (cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        direction.y = (float) sin(Math.toRadians(pitch));
+        direction.z = (float) (sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
 
         float deltaTime = 0;
         float lastFrame = 0;
@@ -86,6 +106,7 @@ public class Main {
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         //init VBO
         int VBO = glGenBuffers();
@@ -184,12 +205,14 @@ public class Main {
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            glfwSetCursorPosCallback(window, Main::mouse_callback);
+
             currentFrame = (float) glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
-
-            processInput(window,deltaTime,cameraPos, cameraUp,cameraFront);
-
+//            System.out.println("deltaTime: " + deltaTime);
+            processInput(window,deltaTime,cameraPos,cameraUp);
+//            System.out.println("cameraPos: " + cameraPos);
             //setting view matrix
             view = new Matrix4f().lookAt(cameraPos, new Vector3f(cameraPos).add(cameraFront), cameraUp);
             lightingShader.use();
@@ -222,23 +245,60 @@ public class Main {
         glfwTerminate();
     }
 
-    public static void processInput(long window, float deltaTime, Vector3f cameraPos, Vector3f cameraUp, Vector3f cameraFront) {
+    public static void processInput(long window, float deltaTime, Vector3f cameraPos, Vector3f cameraUp) {
+        //glfwSetCursorPosCallback(window, mouse_callback);//make function
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
-        float cameraSpeed = (float) (2.5 * deltaTime);
+        float cameraSpeed = (float) (deltaTime);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            cameraPos.add(cameraFront.mul(cameraSpeed));
+            cameraPos.add(new Vector3f(cameraFront).mul(cameraSpeed));
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            cameraPos.sub(cameraFront.mul(cameraSpeed));
+            cameraPos.sub(new Vector3f(cameraFront).mul(cameraSpeed));
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            cameraPos.sub(new Vector3f().normalize(new Vector3f().cross(cameraFront, cameraUp)).mul(cameraSpeed));
+            cameraPos.sub(new Vector3f(cameraFront).cross(cameraUp).normalize(cameraSpeed));
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            cameraPos.add(new Vector3f().normalize(new Vector3f().cross(cameraFront, cameraUp)).mul(cameraSpeed));
+            cameraPos.add(new Vector3f(cameraFront).cross(cameraUp).normalize(cameraSpeed));
         }
+    }
+    public static double last_xpos = 0;
+    public static double last_ypos = 0;
+    public static void mouse_callback(long window, double xpos, double ypos)
+    {
+        double dx = xpos - last_xpos;
+        double dy = ypos - last_ypos;
+        last_xpos = xpos;
+        last_ypos = ypos;
+        System.out.println("IN MOUSE CALLBACK dx: " + dx + " dy: " + dy);
+        if (firstMouse)
+        {
+            last_xpos = xpos;
+            last_ypos = ypos;
+            firstMouse = false;
+        }
+
+
+
+        float sensitivity = 0.1f;
+        dx *= sensitivity;
+        dy *= sensitivity;
+
+        yaw   += (float) dx;
+        pitch += (float) dy;
+
+        if(pitch > 89.0f)
+            pitch = 89.0f;
+        if(pitch < -89.0f)
+            pitch = -89.0f;
+
+        Vector3f direction = new Vector3f();
+        direction.x = (float) (cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        direction.y = (float) sin(Math.toRadians(pitch) * -1);
+        direction.z = (float) (sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        cameraFront = direction.normalize();
     }
 }
 
