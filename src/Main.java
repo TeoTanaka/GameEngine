@@ -1,6 +1,7 @@
 import org.joml.Quaternionf;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import static java.lang.Math.cos;
@@ -16,6 +17,8 @@ import java.nio.FloatBuffer;
 
 public class Main {
     private static boolean firstMouse = true;
+
+
 
     private static float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
     private static float pitch =  0.0f;
@@ -77,9 +80,11 @@ public class Main {
 
 
 
+
+
         float lastX = (float) ( 800.0f / 2.0);
         float lastY = (float) (600.0 / 2.0);
-        float fov   =  45.0f;
+        float fov   =  1.07f;
 
         Vector3f direction = new Vector3f();
         direction.x = (float) (cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
@@ -95,9 +100,22 @@ public class Main {
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
+        long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
+        if (primaryMonitor == 0) {
+            throw new RuntimeException("Failed to get the primary monitor");
+        }
+
+        // Get video mode (contains resolution info)
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(primaryMonitor);
+        if (vidmode == null) {
+            throw new RuntimeException("Failed to get video mode");
+        }
+
+        int screenWidth = vidmode.width();
+        int screenHeight = vidmode.height();
 
         // Create a windowed mode window and its OpenGL context
-        long window = glfwCreateWindow(800, 600, "My Game", 0, 0);
+        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", glfwGetPrimaryMonitor(), 0);
         if (window == 0) {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
@@ -187,7 +205,7 @@ public class Main {
 //make matrices
         Matrix4f model = new Matrix4f().rotate((float) (Math.toRadians(-55.0f)), new Vector3f(0.0f, 1.0f, 0.0f));
         Matrix4f view;
-        Matrix4f projection = new Matrix4f().perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+        Matrix4f projection = new Matrix4f().perspective(fov, (float) screenWidth / screenHeight, 0.1f, 100.0f);
 
 //    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
@@ -196,6 +214,8 @@ public class Main {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         glEnable(GL_DEPTH_TEST);
+
+        glfwSwapInterval(1); // turn on v sync to stop screen tearing
 
 
         // Main loop
@@ -250,9 +270,16 @@ public class Main {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
-        float cameraSpeed = (float) (deltaTime);
+        float cameraSpeed = (float) ( (deltaTime) * 1.1);
+
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             cameraPos.add(new Vector3f(cameraFront).mul(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            cameraPos.add(new Vector3f(cameraUp).mul(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            cameraPos.sub(new Vector3f(cameraUp).mul(cameraSpeed));
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             cameraPos.sub(new Vector3f(cameraFront).mul(cameraSpeed));
@@ -272,11 +299,13 @@ public class Main {
         double dy = ypos - last_ypos;
         last_xpos = xpos;
         last_ypos = ypos;
-        System.out.println("IN MOUSE CALLBACK dx: " + dx + " dy: " + dy);
+
         if (firstMouse)
         {
             last_xpos = xpos;
             last_ypos = ypos;
+            dx = 0;
+            dy = 0;
             firstMouse = false;
         }
 
@@ -299,6 +328,12 @@ public class Main {
         direction.y = (float) sin(Math.toRadians(pitch) * -1);
         direction.z = (float) (sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
         cameraFront = direction.normalize();
+    }
+
+    public void framebuffer_size_callback(long window, int width, int height)
+    {
+
+        glViewport(0, 0, width, height);
     }
 }
 
