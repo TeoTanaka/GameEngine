@@ -27,7 +27,7 @@ public class Main {
 
     public static void main(String[] args) {
         //Vertexes
-        float vertices[] = {
+        float vertices[] = {//draw quadrilaterals (one face at a time)
                 //vertex position  |       uv    |   normals
                 -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
                 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
@@ -136,32 +136,6 @@ public class Main {
         Shader lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
-
-        //init vertex shader
-//        String vertexShaderSource = FileLoader.readFile("Resources/Vertex.vert");
-//        int vertexShader= glCreateShader(GL_VERTEX_SHADER);
-//        glShaderSource(vertexShader,vertexShaderSource);
-//        glCompileShader(vertexShader);
-//
-//
-//
-//        //init fragment shader
-//        String fragmentShaderSource = FileLoader.readFile("Resources/Fragment.frag");
-//        int fragmentShader= glCreateShader(GL_FRAGMENT_SHADER);
-//        glShaderSource(fragmentShader,fragmentShaderSource);
-//        glCompileShader(fragmentShader);
-//
-//
-//
-//        //init shader program
-//        int shaderProgram= glCreateProgram();
-//        glAttachShader(shaderProgram, vertexShader);
-//        glAttachShader(shaderProgram, fragmentShader);
-//        glLinkProgram(shaderProgram);
-//
-//        glUseProgram(shaderProgram);
-//        glDeleteShader(vertexShader);
-//        glDeleteShader(fragmentShader);
 
         //init vertex attrb pointer
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * Float.BYTES, 0);
