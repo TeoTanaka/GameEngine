@@ -45,6 +45,9 @@ public class Box {
         this.width = width;
         this.height = height;
         this.color = color;
+        color.x/=255;
+        color.y/=255;
+        color.z/=255;
         pos.set(x, y, z);
 
         genPoints();
@@ -52,7 +55,7 @@ public class Box {
     }
 
     public void update() {
-        // Future animations / logic
+        render();
     }
 
     public void render() {
@@ -67,7 +70,9 @@ public class Box {
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
         Matrix4f model = new Matrix4f().translate(pos);
-        Main.lightingShader.setVec3("objectColor", color);
+        //Main.lightingShader.setVec3("objectColor", new Vector3f(52, 235, 235));
+        Main.lightingShader.setVec3("lightColor", color);
+        Main.lightingShader.setVec3("lightPos", Main.lightPos);
         Main.lightingShader.sendModelLoc(model);
 
         glBindVertexArray(VAO);

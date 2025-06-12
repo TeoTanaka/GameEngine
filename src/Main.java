@@ -14,12 +14,17 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 
 public class Main {
     private static boolean firstMouse = true;
 
     public static Shader lightingShader;
+
+    public static ArrayList<Box> boxes = new ArrayList<Box>();
+
+    public static Vector3f lightPos = new Vector3f(1f, 1f, 0f);
 
 
 
@@ -80,7 +85,7 @@ public class Main {
                 -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f
         };
         //camera stuff
-        Vector3f lightPos = new Vector3f(1f, 1f, 0f);
+
 
         Vector3f cameraPos = new Vector3f(0.0f, 0.0f, 3.0f);
 
@@ -144,15 +149,18 @@ public class Main {
         lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
-        Box box = new Box(1,1,1,1,1,1,new Vector3f(52, 235, 235));
-
+        Box box = new Box(2,1,1,1,1,1,new Vector3f(28, 98, 212));
+//        for (int i = 0; i < Math.random()*20; i++){
+//            boxes.add(new Box((float) (Math.random())*10, (float)(Math.random())*10,(float)(Math.random())*10,(float)(Math.random())*2,(float)(Math.random())*2,(float)(Math.random()*2),new Vector3f((float) (Math.random()*255),(float)(Math.random()*255),(float)(Math.random()*255))));
+//        }
 
         //init vertex attrb pointer
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES); // Texture Coordinates
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES); // normals
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 3, GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES); // normals
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES); // Texture Coordinates
         glEnableVertexAttribArray(2);
         //init VAO
 
@@ -228,7 +236,11 @@ public class Main {
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            box.render();
+            for (Box b : boxes){
+                b.update();
+            }
+
+            box.update();
 
 
             Matrix4f light_cube_model = new Matrix4f();
