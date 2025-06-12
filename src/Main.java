@@ -21,10 +21,14 @@ public class Main {
     private static boolean firstMouse = true;
 
     public static Shader lightingShader;
+    public static ArrayList<Point> points = new ArrayList<Point>();
+    public static ArrayList<Stick> sticks = new ArrayList<Stick>();
 
     public static ArrayList<Box> boxes = new ArrayList<Box>();
 
     public static Vector3f lightPos = new Vector3f(1f, 1f, 0f);
+
+    public static float GRAVITY = 10, AIR_RESIST = 1f;
 
 
 
