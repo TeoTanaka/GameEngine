@@ -15,16 +15,25 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Box {
 
     private float length, width, height;
+
+    private Point reference;
     private final Vector3f pos = new Vector3f();
     private final Vector3f color;
 
     private Point[] points;
+    private Stick[] sticks;
     private float[] vertices;
+
+
+    private float halfL;
+    private float halfW;
+    private float halfH;
 
     private int VAO;
     private int VBO;
@@ -50,12 +59,21 @@ public class Box {
         color.z/=255;
         pos.set(x, y, z);
 
+        halfL = length / 2f;
+        halfW = width / 2f;
+        halfH = height / 2f;
+
         genPoints();
+        genSticks();
         generateVertices();
+        sendPhysicsObjs();
     }
 
     public void update() {
         render();
+//        pos.x = reference.getPos().x+halfL;
+//        pos.y = reference.getPos().y+halfH;
+//        pos.z = reference.getPos().z+halfW;
     }
 
     public void render() {
@@ -69,7 +87,12 @@ public class Box {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
-        Matrix4f model = new Matrix4f().translate(pos);
+
+
+        Matrix4f model = new Matrix4f()
+                .translate(new Vector3f(pos).mul(.01f))
+                .scale(.1f);
+
         //Main.lightingShader.setVec3("objectColor", new Vector3f(52, 235, 235));
         Main.lightingShader.setVec3("lightColor", color);
         Main.lightingShader.setVec3("lightPos", Main.lightPos);
@@ -81,21 +104,36 @@ public class Box {
     }
 
     private void genPoints() {
-        float halfL = length / 2f;
-        float halfW = width / 2f;
-        float halfH = height / 2f;
+
+
+        reference = new Point(pos.x-halfL, pos.y-halfH, pos.z-halfW);
 
         points = new Point[]{
-                new Point(-halfL, -halfH, -halfW), // 0
-                new Point( halfL, -halfH, -halfW), // 1
-                new Point( halfL, -halfH,  halfW), // 2
-                new Point(-halfL, -halfH,  halfW), // 3
-                new Point(-halfL,  halfH, -halfW), // 4
-                new Point( halfL,  halfH, -halfW), // 5
-                new Point( halfL,  halfH,  halfW), // 6
-                new Point(-halfL,  halfH,  halfW)  // 7
+                reference,                         // 0 bottom back  left
+                new Point( +halfL+pos.x, -halfH+pos.y, -halfW+pos.z), // 1 bottom back  right
+                new Point( +halfL+pos.x, -halfH+pos.y,  +halfW+pos.z), // 2 bottom front right
+                new Point(-halfL+pos.x, -halfH+pos.y,  +halfW+pos.z), // 3 bottom front left
+                new Point(-halfL+pos.x, +halfH+pos.y, -halfW+pos.z), // 4 top    back  left
+                new Point(+halfL+pos.x,  +halfH+pos.y, -halfW+pos.z), // 5 top    back  right
+                new Point(+halfL+pos.x,  +halfH+pos.y, +halfW+pos.z), // 6 top    front right
+                new Point(-halfL+pos.x,  +halfH+pos.y,  +halfW+pos.z)
         };
+
+        System.out.println(points[3].getPos().y);
     }
+
+//    points = new Point[]{
+//        reference,                         // 0 bottom back  left
+//                new Point( +halfL, -halfH, -halfW), // 1 bottom back  right
+//                new Point( +halfL, -halfH,  +halfW), // 2 bottom front right
+//                new Point(-halfL, -halfH,  +halfW), // 3 bottom front left
+//                new Point(-halfL, +halfH, -halfW), // 4 top    back  left
+//                new Point(+halfL,  +halfH, -halfW), // 5 top    back  right
+//                new Point(+halfL,  +halfH, +halfW), // 6 top    front right
+//                new Point(-halfL,  +halfH,  +halfW)
+//    };
+
+
 
     private void generateVertices() {
         vertices = new float[36 * 6]; // 6 floats per vertex, 36 vertices
@@ -110,6 +148,62 @@ public class Box {
             System.arraycopy(faceData, 0, vertices, index, faceData.length);
             index += faceData.length;
         }
+    }
+
+    private void genSticks(){
+        sticks = new Stick[]{
+                // === 12 Edges of the cube ===
+                new Stick(points[0], points[1]),
+                new Stick(points[1], points[2]),
+                new Stick(points[2], points[3]),
+                new Stick(points[3], points[0]),
+
+                new Stick(points[4], points[5]),
+                new Stick(points[5], points[6]),
+                new Stick(points[6], points[7]),
+                new Stick(points[7], points[4]),
+
+                new Stick(points[0], points[4]),
+                new Stick(points[1], points[5]),
+                new Stick(points[2], points[6]),
+                new Stick(points[3], points[7]),
+
+//                // === 2 Diagonals per face ===
+//                // Bottom face (0,1,2,3)
+//                new Stick(points[0], points[2]),
+//                new Stick(points[1], points[3]),
+//
+//                // Top face (4,5,6,7)
+//                new Stick(points[4], points[6]),
+//                new Stick(points[5], points[7]),
+//
+//                // Front face (3,2,6,7)
+//                new Stick(points[3], points[6]),
+//                new Stick(points[2], points[7]),
+//
+//                // Back face (0,1,5,4)
+//                new Stick(points[0], points[5]),
+//                new Stick(points[1], points[4]),
+//
+//                // Left face (0,3,7,4)
+//                new Stick(points[0], points[7]),
+//                new Stick(points[3], points[4]),
+//
+//                // Right face (1,2,6,5)
+//                new Stick(points[1], points[6]),
+//                new Stick(points[2], points[5]),
+
+                // === 4 Internal diagonal corner-to-corner sticks ===
+                new Stick(points[0], points[6]),
+                new Stick(points[1], points[7]),
+                new Stick(points[2], points[4]),
+                new Stick(points[3], points[5])
+        };
+    }
+
+    private void sendPhysicsObjs(){
+        Main.points.addAll(Arrays.asList(points));
+        Main.sticks.addAll(Arrays.asList(sticks));
     }
 
     private float[] generateFace(Vector3f p1, Vector3f p2, Vector3f p3, Vector3f p4) {

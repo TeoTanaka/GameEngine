@@ -40,15 +40,18 @@ public class Stick {
         Vector3f pos1 = new Vector3f(p1.getPos());  // safe copies
         Vector3f pos2 = new Vector3f(p2.getPos());
 
-        Vector3f delta = pos2.sub(pos1);     // vector from p1 to p2
-        float dist = delta.length();     // current distance
-        float diff = (dist - length) / dist; // normalized difference
 
-        Vector3f offset = delta.mul(0.5f * diff); // move each point half the correction
+
+        Vector3f delta = new Vector3f(pos2).sub(pos1);     // vector from p1 to p2
+        float dist = new Vector3f(delta).length();     // current distance
+        float diff = (dist - length) / dist; // normalized difference
+        System.out.println("delta "+pos1);
+
+        Vector3f offset = new Vector3f(delta).mul(0.5f * diff); // move each point half the correction
 
         p1.setPos(pos1.add(offset));  // p1 moves toward p2
         p2.setPos(pos2.sub(offset));  // p2 moves toward p1
-
+        //System.out.println();
 
     }
 

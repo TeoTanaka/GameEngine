@@ -66,20 +66,25 @@ public class Point {
         Vector3f acc = new Vector3f();
         acc.x = force.x / mass * Main.AIR_RESIST;
         acc.y = force.y / mass * Main.AIR_RESIST;
+        acc.z = force.z / mass * Main.AIR_RESIST;
 
         Vector3f vel = new Vector3f();
         vel.x = pos.x- oldPos.x;
         vel.y = pos.y- oldPos.y ;
+        vel.z = pos.z- oldPos.z ;
 
         force.x = 0;
         force.y = Main.GRAVITY;//apply forces
+        force.z = 0;
 
 
         oldPos.x = pos.x;
         oldPos.y = pos.y;
+        oldPos.z = pos.z;
 
         pos.x += vel.x + acc.x *dt*dt;
         pos.y += vel.y + acc.y *dt*dt;
+        pos.z += vel.z + acc.z *dt*dt;
 //        constrain();
     }
 //    public void constrain(){
@@ -129,6 +134,10 @@ public class Point {
 
     public void addSelf(){
         Main.points.add(this);
+    }
+
+    public void addPos(Vector3f n){
+        pos.add(n);
     }
 
 

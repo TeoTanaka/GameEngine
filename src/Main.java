@@ -113,32 +113,63 @@ public class Main {
         float currentFrame = 0;
 
 
-        // Initialize GLFW
+//        // Initialize GLFW
+//        if (!glfwInit()) {
+//            throw new IllegalStateException("Unable to initialize GLFW");
+//        }
+//        long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
+//        if (primaryMonitor == 0) {
+//            throw new RuntimeException("Failed to get the primary monitor");
+//        }
+//
+//        // Get video mode (contains resolution info)
+//        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(primaryMonitor);
+//        if (vidmode == null) {
+//            throw new RuntimeException("Failed to get video mode");
+//        }
+//
+//        int screenWidth = vidmode.width();
+//        int screenHeight = vidmode.height();
+//
+//        // Create a windowed mode window and its OpenGL context
+//        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", glfwGetPrimaryMonitor(), 0);
+//        if (window == 0) {
+//            glfwTerminate();
+//            throw new RuntimeException("Failed to create the GLFW window");
+//        }
+//
+//        // Make the OpenGL context current
+//        glfwMakeContextCurrent(window);
+//        GL.createCapabilities();
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//
+
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
-        long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
-        if (primaryMonitor == 0) {
-            throw new RuntimeException("Failed to get the primary monitor");
-        }
 
-        // Get video mode (contains resolution info)
-        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(primaryMonitor);
-        if (vidmode == null) {
-            throw new RuntimeException("Failed to get video mode");
-        }
+// Choose a window size (not full screen)
+        int screenWidth = 800;
+        int screenHeight = 600;
 
-        int screenWidth = vidmode.width();
-        int screenHeight = vidmode.height();
-
-        // Create a windowed mode window and its OpenGL context
-        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", glfwGetPrimaryMonitor(), 0);
+// Create a windowed mode window (not fullscreen)
+        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", 0, 0);
         if (window == 0) {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        // Make the OpenGL context current
+// Center the window on the screen
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        if (vidmode != null) {
+            glfwSetWindowPos(
+                    window,
+                    (vidmode.width() - screenWidth) / 2,
+                    (vidmode.height() - screenHeight) / 2
+            );
+        }
+
+// Make the OpenGL context current
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -150,10 +181,11 @@ public class Main {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
 
+
         lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
-        Box box = new Box(2,1,1,1,1,1,new Vector3f(28, 98, 212));
+        Box box = new Box(10,10,10,10,10,10,new Vector3f(28, 98, 212));
 //        for (int i = 0; i < Math.random()*20; i++){
 //            boxes.add(new Box((float) (Math.random())*10, (float)(Math.random())*10,(float)(Math.random())*10,(float)(Math.random())*2,(float)(Math.random())*2,(float)(Math.random()*2),new Vector3f((float) (Math.random()*255),(float)(Math.random()*255),(float)(Math.random()*255))));
 //        }
@@ -239,10 +271,21 @@ public class Main {
 
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+            //System.out.println("posX"+points.getFirst().getPos().x+"posY"+points.getFirst().getPos().y+"posZ"+points.getFirst().getPos().z);
+
+            for (Point p : points){
+                p.update(deltaTime);
+                System.out.println(p.getPos().x+" "+p.getPos().y+" "+p.getPos().z);
+            }
+            for (Stick s : sticks){
+                s.update();
+
+            }
 
             for (Box b : boxes){
                 b.update();
             }
+
 
             box.update();
 
