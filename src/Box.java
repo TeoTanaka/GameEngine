@@ -14,6 +14,7 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 
 public class Box {
@@ -22,7 +23,15 @@ public class Box {
     private Vector3f pos;
 
     private Vector3f[] points;
-
+    private float[] vertices;
+    private final int[][] facePoints = new int[][]{
+            {0,1,2,3},//top
+            {4,5,6,7},//bottom
+            {2,3,6,7},//front
+            {0,1,4,5},//back
+            {0,3,4,7},//left
+            {1,2,5,6}//right
+    };//  which points make up each face
 
 
     public Box(Vector3f pos, float length, float width, float height){
@@ -36,6 +45,19 @@ public class Box {
     public void update(){}
 
     public void render(){
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * Float.BYTES, 0); // vertices
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES); // normals
+        glEnableVertexAttribArray(1);
+
+        generateVertices();//sets the vertices to the shape of the cube based on the points
+
+
+        int VBO = glGenBuffers();
+        glBindVertexArray(VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+
 
     }
     public void genPoints(){
@@ -54,6 +76,24 @@ public class Box {
                 new Vector3f( halfL,  halfH,  halfW), // 6: top-front-right
                 new Vector3f(-halfL,  halfH,  halfW)  // 7: top-front-left
         };
+    }
+
+    public void generateVertices(){//generates the mesh for the whole shape
+        vertices = new float[216];
+        int index = 0;
+        for (int i = 0; i < 6;i++){
+
+
+            float[] face = generateFace(
+                    points[facePoints[i][0]],//getting the index of each point that makes up
+                    points[facePoints[i][1]],//the face and then taking the point at that index from
+                    points[facePoints[i][2]],//points.
+                    points[facePoints[i][3]]
+            );
+
+            System.arraycopy(face, 0, vertices, index, 36);
+            index += 36;
+        }
     }
 
     public float[] generateFace(Vector3f p1, Vector3f p2, Vector3f p3, Vector3f p4){
@@ -76,6 +116,7 @@ public class Box {
                 p4.x, p4.y, p4.z,  normal.x, normal.y, normal.z
         };
     }
+
 
 
 }
