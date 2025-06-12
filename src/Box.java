@@ -20,10 +20,12 @@ import java.util.ArrayList;
 public class Box {
 
     private float length, width, height;
-    private Vector3f pos;
+    private Vector3f pos = new Vector3f();
 
     private Vector3f[] points;
     private float[] vertices;
+
+    private Vector3f color;
     private final int[][] facePoints = new int[][]{
             {0,1,2,3},//top
             {4,5,6,7},//bottom
@@ -34,11 +36,14 @@ public class Box {
     };//  which points make up each face
 
 
-    public Box(Vector3f pos, float length, float width, float height){
+    public Box(float x, float y, float z, float length, float width, float height, Vector3f color){
         this.length = length;
         this.width = width;
         this.height = height;
-        this.pos = pos;
+        pos.x = x;
+        pos.y = y;
+        pos.z = z;
+        this.color = color;
         genPoints();
     }
 
@@ -56,7 +61,29 @@ public class Box {
         int VBO = glGenBuffers();
         glBindVertexArray(VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);//I think it should be dynamic because the mesh is changing
+
+        int VAO = glGenBuffers();
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VAO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+
+        glBindVertexArray(VAO);
+// 2. copy our vertices array in a buffer for OpenGL to use
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+// 3. then set our vertex attributes pointers
+//        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        Matrix4f model = new Matrix4f().translate(pos);//this is how the cube is moved
+        Main.lightingShader.setVec3("objectColor", color);//set the cube's color
+        Main.lightingShader.sendModelLoc(model);//send the position in
+
+
+        glBindVertexArray(VAO);//draw
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 
     }
@@ -81,7 +108,7 @@ public class Box {
     public void generateVertices(){//generates the mesh for the whole shape
         vertices = new float[216];
         int index = 0;
-        for (int i = 0; i < 6;i++){
+        for (int i = 0; i < 6;i++){//does this to generate each face
 
 
             float[] face = generateFace(
@@ -91,7 +118,7 @@ public class Box {
                     points[facePoints[i][3]]
             );
 
-            System.arraycopy(face, 0, vertices, index, 36);
+            System.arraycopy(face, 0, vertices, index, 36);//adds it to vertices
             index += 36;
         }
     }

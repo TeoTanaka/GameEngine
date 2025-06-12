@@ -81,5 +81,13 @@ public class Shader {
         }
 
     }
+    public void sendModelLoc(Matrix4f model){
+        int modelLoc = glGetUniformLocation(shaderProgram, "model");
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer matrixBuffer = stack.mallocFloat(16); // Allocate temporary buffer
+            model.get(matrixBuffer); // Fill buffer with matrix data
+            glUniformMatrix4fv(modelLoc, false, matrixBuffer); // Pass to OpenGL
+        }
+    }
 }
 

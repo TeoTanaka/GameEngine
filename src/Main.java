@@ -25,7 +25,13 @@ public class Main {
 
     private static Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
 
+    public static Shader lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
+    public static Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
+
+
     public static void main(String[] args) {
+
+        Box box = new Box(2,0,0,5,5,5,new Vector3f(52, 235, 235));
         //Vertexes
         float vertices[] = {//draw quadrilaterals (one face at a time)
                 //vertex position  |       uv    |   normals
@@ -229,6 +235,8 @@ public class Main {
 
             glBindVertexArray(lightCubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //box.render();
 
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
