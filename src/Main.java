@@ -15,8 +15,11 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
+
 public class Main {
     private static boolean firstMouse = true;
+
+    public static Shader lightingShader;
 
 
 
@@ -25,13 +28,12 @@ public class Main {
 
     private static Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
 
-    public static Shader lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
-    public static Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
+
 
 
     public static void main(String[] args) {
 
-        Box box = new Box(2,0,0,5,5,5,new Vector3f(52, 235, 235));
+
         //Vertexes
         float vertices[] = {//draw quadrilaterals (one face at a time)
                 //vertex position  |       uv    |   normals
@@ -139,8 +141,10 @@ public class Main {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
 
-        Shader lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
+        lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
+
+        Box box = new Box(1,1,1,1,1,1,new Vector3f(52, 235, 235));
 
 
         //init vertex attrb pointer
@@ -224,6 +228,8 @@ public class Main {
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            box.render();
+
 
             Matrix4f light_cube_model = new Matrix4f();
             light_cube_model.translate(lightPos);
@@ -236,7 +242,7 @@ public class Main {
             glBindVertexArray(lightCubeVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            //box.render();
+
 
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
