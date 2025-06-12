@@ -23,7 +23,7 @@ public class Box {
     private final Vector3f pos = new Vector3f();
     private final Vector3f color;
 
-    private Vector3f[] points;
+    private Point[] points;
     private float[] vertices;
 
     private int VAO;
@@ -85,15 +85,15 @@ public class Box {
         float halfW = width / 2f;
         float halfH = height / 2f;
 
-        points = new Vector3f[]{
-                new Vector3f(-halfL, -halfH, -halfW), // 0
-                new Vector3f( halfL, -halfH, -halfW), // 1
-                new Vector3f( halfL, -halfH,  halfW), // 2
-                new Vector3f(-halfL, -halfH,  halfW), // 3
-                new Vector3f(-halfL,  halfH, -halfW), // 4
-                new Vector3f( halfL,  halfH, -halfW), // 5
-                new Vector3f( halfL,  halfH,  halfW), // 6
-                new Vector3f(-halfL,  halfH,  halfW)  // 7
+        points = new Point[]{
+                new Point(-halfL, -halfH, -halfW), // 0
+                new Point( halfL, -halfH, -halfW), // 1
+                new Point( halfL, -halfH,  halfW), // 2
+                new Point(-halfL, -halfH,  halfW), // 3
+                new Point(-halfL,  halfH, -halfW), // 4
+                new Point( halfL,  halfH, -halfW), // 5
+                new Point( halfL,  halfH,  halfW), // 6
+                new Point(-halfL,  halfH,  halfW)  // 7
         };
     }
 
@@ -102,10 +102,10 @@ public class Box {
         int index = 0;
         for (int[] face : facePoints) {
             float[] faceData = generateFace(
-                    points[face[0]],
-                    points[face[1]],
-                    points[face[2]],
-                    points[face[3]]
+                    points[face[0]].getPos(),
+                    points[face[1]].getPos(),
+                    points[face[2]].getPos(),
+                    points[face[3]].getPos()
             );
             System.arraycopy(faceData, 0, vertices, index, faceData.length);
             index += faceData.length;
