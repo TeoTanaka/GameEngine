@@ -22,6 +22,8 @@ public class Point {
     private Vector3f force = new Vector3f();
     private float mass,elasticity;
 
+    private boolean doPhysics = true,doConstraints = false;
+
     public Point(Vector3f pos, Vector3f oldPos, float mass, float elasticity){
         this.pos = pos;
         this.oldPos = oldPos;
@@ -52,14 +54,78 @@ public class Point {
         this.elasticity = 1;
 
     }
+    public Point(float x, float y, float z,boolean doPhysics){
+        this.pos.x = x;
+        this.pos.y = y;
+        this.pos.z = z;
+        this.oldPos = new Vector3f(pos);
+        this.mass = 1;
+        this.elasticity = 1;
+        this.doPhysics = doPhysics;
+    }
 
     public void update(float dt){
-//        constrain();
-        updatePos(dt);
+
+        if (doPhysics) {
+            if (doConstraints) {
+                constrain();
+            }
+            updatePos(dt);
+        }
 
         //System.out.println("x:"+ pos.x+" y:"+pos.y);
 
     }
+
+    boolean pointInBox(Point p, Box b, Matrix4f invModel) {
+        Vector3f local = new Vector3f(p.getPos());
+        invModel.transformPosition(local); // transforms world pos into cube's local space
+        return Math.abs(local.x) <= b.getHalfL() &&
+                Math.abs(local.y) <= b.getHalfH() &&
+                Math.abs(local.z) <= b.getHalfW();
+    }
+
+    public void constrain(){
+        Vector3f vel = new Vector3f();
+        vel.x = pos.x- oldPos.x;
+        vel.y = pos.y- oldPos.y;
+        vel.z = pos.z-oldPos.z;
+        float yBound = 100;
+        float xBound = 100;
+        float zBound = 100;
+
+        if (pos.y > yBound){
+
+            pos.y = yBound;
+            oldPos.y = pos.y+vel.y*elasticity;
+
+        }else if ( pos.y < 0){
+            pos.y = 0;
+            oldPos.y = pos.y+vel.y*elasticity;
+        }
+        if (pos.x > xBound){
+            pos.x = xBound;
+            oldPos.x = pos.x+vel.x*elasticity;
+
+        }else if (pos.x < 0){
+            pos.x = 0;
+            oldPos.x = pos.x+vel.x*elasticity;
+        }
+        if (pos.z > zBound){
+            pos.z = zBound;
+            oldPos.z = pos.z+vel.z*elasticity;
+
+        }else if (pos.z < 0){
+            pos.z = 0;
+            oldPos.z = pos.z+vel.z*elasticity;
+        }
+    }
+
+//    public void detectCollision(){
+//        for (Box b : Main.boxes){
+//            pointInBox(this,b,)
+//        }
+//    }
 
 
     public void updatePos(float dt){
@@ -72,6 +138,8 @@ public class Point {
         vel.x = pos.x- oldPos.x;
         vel.y = pos.y- oldPos.y ;
         vel.z = pos.z- oldPos.z ;
+
+
 
         force.x = 0;
         force.y = Main.GRAVITY;//apply forces
@@ -138,6 +206,14 @@ public class Point {
 
     public void addPos(Vector3f n){
         pos.add(n);
+    }
+
+    public void togglePhysics(){
+        doPhysics  = !doPhysics;
+    }
+
+    public void setForce(Vector3f f){
+        force = new Vector3f(f);
     }
 
 

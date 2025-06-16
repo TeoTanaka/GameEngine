@@ -20,6 +20,8 @@ import java.util.ArrayList;
 public class Main {
     private static boolean firstMouse = true;
 
+    private static boolean paused = false;
+
     public static Shader lightingShader;
     public static ArrayList<Point> points = new ArrayList<Point>();
     public static ArrayList<Stick> sticks = new ArrayList<Stick>();
@@ -27,6 +29,10 @@ public class Main {
     public static ArrayList<Box> boxes = new ArrayList<Box>();
 
     public static Vector3f lightPos = new Vector3f(1f, 1f, 0f);
+
+    public static Vector3f RED = new Vector3f(255,0,0);
+    public static Vector3f GREEN = new Vector3f(0,255,0);
+    public static Vector3f BLUE = new Vector3f(0,0,255);
 
     public static float GRAVITY = 10, AIR_RESIST = 1f;
 
@@ -113,61 +119,38 @@ public class Main {
         float currentFrame = 0;
 
 
-//        // Initialize GLFW
-//        if (!glfwInit()) {
-//            throw new IllegalStateException("Unable to initialize GLFW");
-//        }
-//        long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
-//        if (primaryMonitor == 0) {
-//            throw new RuntimeException("Failed to get the primary monitor");
-//        }
-//
-//        // Get video mode (contains resolution info)
-//        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(primaryMonitor);
-//        if (vidmode == null) {
-//            throw new RuntimeException("Failed to get video mode");
-//        }
-//
-//        int screenWidth = vidmode.width();
-//        int screenHeight = vidmode.height();
-//
-//        // Create a windowed mode window and its OpenGL context
-//        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", glfwGetPrimaryMonitor(), 0);
-//        if (window == 0) {
-//            glfwTerminate();
-//            throw new RuntimeException("Failed to create the GLFW window");
-//        }
-//
-//        // Make the OpenGL context current
-//        glfwMakeContextCurrent(window);
-//        GL.createCapabilities();
-//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//
-
+        // Initialize GLFW
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
+        long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
+        if (primaryMonitor == 0) {
+            throw new RuntimeException("Failed to get the primary monitor");
+        }
 
-// Choose a window size (not full screen)
-        int screenWidth = 800;
-        int screenHeight = 600;
+        // Get video mode (contains resolution info)
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(primaryMonitor);
+        if (vidmode == null) {
+            throw new RuntimeException("Failed to get video mode");
+        }
 
-// Create a windowed mode window (not fullscreen)
-        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", 0, 0);
+        int screenWidth = vidmode.width();
+        int screenHeight = vidmode.height();
+
+        // Create a windowed mode window and its OpenGL context
+        long window = glfwCreateWindow(screenWidth, screenHeight, "My Game", glfwGetPrimaryMonitor(), 0);
         if (window == 0) {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-// Center the window on the screen
-        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        if (vidmode != null) {
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - screenWidth) / 2,
-                    (vidmode.height() - screenHeight) / 2
-            );
-        }
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(window);
+        GL.createCapabilities();
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
+
 
 // Make the OpenGL context current
         glfwMakeContextCurrent(window);
@@ -185,9 +168,27 @@ public class Main {
         lightingShader = new Shader("Resources/Cube.vert", "Resources/Cube.frag");
         Shader lightCubeShader = new Shader("Resources/Light_cube.vert", "Resources/light_cube.frag");
 
-        Box box = new Box(10,10,10,10,10,10,new Vector3f(28, 98, 212));
-//        for (int i = 0; i < Math.random()*20; i++){
-//            boxes.add(new Box((float) (Math.random())*10, (float)(Math.random())*10,(float)(Math.random())*10,(float)(Math.random())*2,(float)(Math.random())*2,(float)(Math.random()*2),new Vector3f((float) (Math.random()*255),(float)(Math.random()*255),(float)(Math.random()*255))));
+        //Box box = new Box(50,10,50,10,10,10,new Vector3f(28, 98, 212));
+        boxes.add(new Box(0,0,0,10,10,10,BLUE));
+        boxes.add(new Box(0,30,0,30,30,10,RED,false));
+        //boxes.add(new Box(50,50,50,100,100,100,new Vector3f(28, 98, 212),false));
+        //boxes.add(new Box(0,0,0,400,400,20,new Vector3f(255, 255, 255),false));
+
+        //below is the setup for the chaos in a blue box scene
+
+//        for (int i = 0; i < 25; i++){
+//            float randX = (float) (Math.random()*70+10);
+//            float randY = (float) (Math.random()*70+10);
+//            float randZ = (float) (Math.random()*70+10);
+//            float length = (float) (Math.random()*7+3);
+//            float width = (float) (Math.random()*7+3);
+//            float height = (float) (Math.random()*7+3);
+//            Vector3f color = new Vector3f((float) (Math.random()*235+20), (float) (Math.random()*235+20), (float) (Math.random()*235+20));
+//            boxes.add(new Box(randX, randY, randZ,length,width,height,color));
+//        }
+//
+//        for (Point p : points){
+//            p.setForce(new Vector3f((float) (Math.random()*5),(float) (Math.random()*5),(float) (Math.random()*5)));
 //        }
 
         //init vertex attrb pointer
@@ -267,27 +268,29 @@ public class Main {
             lightingShader.setVec3("objectColor", new Vector3f(1.0f, 0.5f, 0.31f));
             lightingShader.setVec3("lightColor", new Vector3f(1.0f, 1.0f, 1.0f));
             lightingShader.setVec3("lightPos", lightPos);
+            //lightingShader.sendModelLoc();
             lightingShader.sendLocs(model, view, projection);
 
-            glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+//            glBindVertexArray(VAO);
+//            glDrawArrays(GL_TRIANGLES, 0, 36);
             //System.out.println("posX"+points.getFirst().getPos().x+"posY"+points.getFirst().getPos().y+"posZ"+points.getFirst().getPos().z);
+            if (!paused) {
+                for (Point p : points) {
+                    p.update(deltaTime);
+                    System.out.println(p.getPos().x + " " + p.getPos().y + " " + p.getPos().z);
+                }
+                for (Stick s : sticks) {
+                    s.update();
 
-            for (Point p : points){
-                p.update(deltaTime);
-                System.out.println(p.getPos().x+" "+p.getPos().y+" "+p.getPos().z);
+                }
+
+                for (Box b : boxes) {
+                    b.update();
+                }
             }
-            for (Stick s : sticks){
-                s.update();
-
-            }
-
-            for (Box b : boxes){
-                b.update();
-            }
 
 
-            box.update();
+            //box.update();
 
 
             Matrix4f light_cube_model = new Matrix4f();
@@ -336,6 +339,9 @@ public class Main {
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             cameraPos.add(new Vector3f(cameraFront).cross(cameraUp).normalize(cameraSpeed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+            paused = !paused;
         }
     }
     public static double last_xpos = 0;

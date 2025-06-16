@@ -11,6 +11,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -25,6 +26,8 @@ public class Box {
     private Point reference;
     private final Vector3f pos = new Vector3f();
     private final Vector3f color;
+
+    public boolean doPhysics = true;
 
     private Point[] points;
     private Stick[] sticks;
@@ -69,11 +72,33 @@ public class Box {
         sendPhysicsObjs();
     }
 
+    public Box(float x, float y, float z, float length, float width, float height, Vector3f color,boolean doPhys) {
+        this.length = length;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        color.x/=255;
+        color.y/=255;
+        color.z/=255;
+        pos.set(x, y, z);
+
+        halfL = length / 2f;
+        halfW = width / 2f;
+        halfH = height / 2f;
+
+        this.doPhysics = doPhys;
+
+        genPoints();
+        genSticks();
+        generateVertices();
+        sendPhysicsObjs();
+    }
     public void update() {
         render();
-//        pos.x = reference.getPos().x+halfL;
-//        pos.y = reference.getPos().y+halfH;
-//        pos.z = reference.getPos().z+halfW;
+        pos.x = reference.getPos().x+halfL;
+        pos.y = reference.getPos().y+halfH;
+        pos.z = reference.getPos().z+halfW;
+
     }
 
     public void render() {
@@ -91,6 +116,7 @@ public class Box {
 
         Matrix4f model = new Matrix4f()
                 .translate(new Vector3f(pos).mul(.01f))
+                .scale(-1.0f, -1.0f, 1.0f)
                 .scale(.1f);
 
         //Main.lightingShader.setVec3("objectColor", new Vector3f(52, 235, 235));
@@ -106,17 +132,17 @@ public class Box {
     private void genPoints() {
 
 
-        reference = new Point(pos.x-halfL, pos.y-halfH, pos.z-halfW);
+        reference = new Point(pos.x-halfL, pos.y-halfH, pos.z-halfW,doPhysics);
 
         points = new Point[]{
                 reference,                         // 0 bottom back  left
-                new Point( +halfL+pos.x, -halfH+pos.y, -halfW+pos.z), // 1 bottom back  right
-                new Point( +halfL+pos.x, -halfH+pos.y,  +halfW+pos.z), // 2 bottom front right
-                new Point(-halfL+pos.x, -halfH+pos.y,  +halfW+pos.z), // 3 bottom front left
-                new Point(-halfL+pos.x, +halfH+pos.y, -halfW+pos.z), // 4 top    back  left
-                new Point(+halfL+pos.x,  +halfH+pos.y, -halfW+pos.z), // 5 top    back  right
-                new Point(+halfL+pos.x,  +halfH+pos.y, +halfW+pos.z), // 6 top    front right
-                new Point(-halfL+pos.x,  +halfH+pos.y,  +halfW+pos.z)
+                new Point( +halfL+pos.x, -halfH+pos.y, -halfW+pos.z,doPhysics), // 1 bottom back  right
+                new Point( +halfL+pos.x, -halfH+pos.y,  +halfW+pos.z,doPhysics), // 2 bottom front right
+                new Point(-halfL+pos.x, -halfH+pos.y,  +halfW+pos.z,doPhysics), // 3 bottom front left
+                new Point(-halfL+pos.x, +halfH+pos.y, -halfW+pos.z,doPhysics), // 4 top    back  left
+                new Point(+halfL+pos.x,  +halfH+pos.y, -halfW+pos.z,doPhysics), // 5 top    back  right
+                new Point(+halfL+pos.x,  +halfH+pos.y, +halfW+pos.z,doPhysics), // 6 top    front right
+                new Point(-halfL+pos.x,  +halfH+pos.y,  +halfW+pos.z,doPhysics)
         };
 
         System.out.println(points[3].getPos().y);
@@ -245,5 +271,15 @@ public class Box {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
+
+    public float getHalfH(){
+        return halfH;
+    }
+    public float getHalfL(){
+        return halfL;
+    }
+    public float getHalfW(){
+        return halfW;
     }
 }
